@@ -5,99 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ventas Institucionales</title>
     @vite('resources/css/app.css')
+    
+    <!-- Asegúrate de incluir Font Awesome si no estás usando el layout principal 
+         aunque ya lo pusimos en app.blade.php, lo mantenemos por si usas 'welcome' sin 'app'.
+    -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/CDQ+09fC3J4Qn2z5c1cM3P92/d1E4A9i4j2n0wA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="bg-white text-gray-800">
     <!-- Navbar -->
-   <header class="bg-blue-700 text-white px-8 py-4 flex items-center justify-between shadow-md">
-    <!-- Logo -->
-    <div class="flex items-center space-x-3">
-        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-14 w-auto">
-        <h1 class="text-2xl font-bold">Ventas Institucionales</h1>
-    </div>
-
-    <!-- Barra de búsqueda -->
-    <div class="flex items-center bg-white rounded-full overflow-hidden shadow-sm w-96">
-        <input 
-            type="text" 
-            placeholder="Buscar..." 
-            class="px-4 py-2 w-full focus:outline-none text-gray-700"
-        >
-        <button class="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition">
-            <i class="fas fa-search"></i>
-        </button>
-    </div>
-
-    <!-- Botón de inicio de sesión -->
-    <a href="{{ route('login') }}" 
-       class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-5 py-2 rounded-lg transition">
-        Iniciar Sesión
-    </a>
-</header>
-
-<!-- Carrusel de información -->
-<div class="relative w-full overflow-hidden bg-white shadow-md">
-    <!-- Slides -->
-    <div id="carousel" class="flex transition-transform duration-700 ease-in-out">
-        <!-- Slide 1 -->
-        <div class="min-w-full flex flex-col items-center justify-center text-center p-10 bg-blue-100">
-            <h2 class="text-3xl font-bold text-blue-700 mb-4">Quienes Somos 🤔🤔</h2>
-            <p class="max-w-2xl text-gray-700">
-                Somos una empresa dedicada a ofrecer uniformes, kits y materiales institucionales con calidad y compromiso.
-            </p>
+    <header class="bg-blue-700 text-white px-8 py-4 flex items-center justify-between shadow-md">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-14 w-auto">
+            <h1 class="text-2xl font-bold">Ventas Institucionales</h1>
         </div>
 
-        <!-- Slide 2 -->
-        <div class="min-w-full flex flex-col items-center justify-center text-center p-10 bg-blue-50">
-            <h2 class="text-3xl font-bold text-blue-700 mb-4">Por Qué Elegirnos</h2>
-            <p class="max-w-2xl text-gray-700">
-                Somos una empresa dedicada a ofrecer productos institucionales con altos estándares de calidad y compromiso social. Contamos con experiencia en atender instituciones educativas, empresas y entidades públicas.
-            </p>
+        <!-- Barra de búsqueda mejorada (con icono ya incluido) -->
+        <form action="{{ route('buscar') }}" method="GET" class="flex items-center bg-white rounded-full overflow-hidden shadow-sm w-96">
+            <input 
+                type="text" 
+                name="q"
+                placeholder="Buscar productos..." 
+                class="px-4 py-2 w-full focus:outline-none text-gray-700"
+                required
+            >
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 transition">
+                <i class="fas fa-search"></i> <!-- Icono de lupa -->
+            </button>
+        </form>
+
+        <!-- Inicio de sesión -->
+        <a href="{{ route('login') }}" 
+        class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-5 py-2 rounded-lg transition">
+            Iniciar Sesión
+        </a>
+    </header>
+
+    <!-- Enlaces de Navegación (Quiénes Somos, Por qué elegirnos, Contáctanos) -->
+    <nav class="bg-blue-50 border-t border-b border-gray-200 py-3 shadow-sm">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-center space-x-4 text-sm md:text-base text-blue-900 font-medium">
+            
+            <a href="{{ route('quienes-somos') }}" class="hover:text-purple-600 transition">
+            Quiénes somos
+            </a>
+            <span class="text-gray-400">|</span>
+
+            <a href="{{ route('por-que-elegirnos') }}" class="hover:text-purple-600 transition">
+            Por qué elegirnos
+            </a>
+            <span class="text-gray-400">|</span>
+
+            <a href="{{ route('contacto') }}" class="hover:text-purple-600 transition">
+            Contáctanos
+            </a>
         </div>
+    </nav>
 
-        <!-- Slide 3 -->
-        <div class="min-w-full flex flex-col items-center justify-center text-center p-10 bg-blue-100">
-            <h2 class="text-3xl font-bold text-blue-700 mb-4">Contáctanos</h2>
-            <p class="max-w-2xl text-gray-700">
-                Puedes comunicarte con nosotros al correo <strong>ventasinstitucionales@gmail.com</strong> o vía WhatsApp 90002431443.
-            </p>
-        </div>
-    </div>
-
-    <!-- Botones de control -->
-    <button id="prev" class="absolute left-3 top-1/2 -translate-y-1/2 bg-morado-600 hover:bg-morado-700 text-white p-2 rounded-full">
-        ❮
-    </button>
-    <button id="next" class="absolute right-3 top-1/2 -translate-y-1/2 bg-morado-600 hover:bg-morado-700 text-white p-2 rounded-full">
-        ❯
-    </button>
-</div>
-
-<script>
-    const carousel = document.getElementById('carousel');
-    const slides = document.querySelectorAll('#carousel > div');
-    let index = 0;
-
-    document.getElementById('next').addEventListener('click', () => {
-        index = (index + 1) % slides.length;
-        carousel.style.transform = `translateX(-${index * 100}%)`;
-    });
-
-    document.getElementById('prev').addEventListener('click', () => {
-        index = (index - 1 + slides.length) % slides.length;
-        carousel.style.transform = `translateX(-${index * 100}%)`;
-    });
-
-    // Cambio automático cada 6 segundos
-    setInterval(() => {
-        index = (index + 1) % slides.length;
-        carousel.style.transform = `translateX(-${index * 100}%)`;
-    }, 6000);
-</script>
-
-
-
-
-    <!-- Hero presentacion-->
+    <!-- h presentacion-->
     <section class="text-center py-20 bg-gradient-to-r from-blue-50 to-purple-50">
         <h2 class="text-5xl font-extrabold text-blue-700 mb-6 animate-fadeIn">Uniformes, Kits y Materiales Institucionales</h2>
         <p class="text-gray-600 max-w-2xl mx-auto mb-8">Calidad y compromiso con las instituciones educativas, empresas y organizaciones. Gestiona tus compras de forma rápida y segura.</p>
@@ -106,42 +70,76 @@
 
     <!-- Productos destacados -->
     <section id="productos" class="max-w-6xl mx-auto py-16 px-6">
-        <h3 class="text-3xl font-semibold text-center text-blue-700 mb-10">Productos Destacados</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            @foreach ([
-                ['img' => 'https://via.placeholder.com/300', 'titulo' => 'Uniforme Escolar', 'desc' => 'Uniformes cómodos, resistentes y personalizados.'],
-                ['img' => 'https://via.placeholder.com/300', 'titulo' => 'Kit Escolar', 'desc' => 'Todo lo que los estudiantes necesitan en un solo paquete.'],
-                ['img' => 'https://via.placeholder.com/300', 'titulo' => 'Material Institucional', 'desc' => 'Papelería y materiales de oficina de alta calidad.']
-            ] as $producto)
-                <div class="bg-white border border-gray-200 rounded-xl shadow hover:shadow-2xl transition transform hover:scale-105 p-6 text-center">
-                    <img src="{{ $producto['img'] }}" alt="{{ $producto['titulo'] }}" class="mx-auto mb-4 rounded-lg">
-                    <h4 class="font-semibold text-xl text-blue-700">{{ $producto['titulo'] }}</h4>
-                    <p class="text-gray-500 mb-4">{{ $producto['desc'] }}</p>
-                    <button onclick="alert('Debes iniciar sesión para agregar al carrito')" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-2 rounded-lg font-semibold hover:opacity-90 transition">Agregar al carrito</button>
-                </div>
-            @endforeach
-        </div>
-    </section>
+    <h3 class="text-3xl font-semibold text-blue-700 mb-10">Productos destacados</h3>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
-    <!-- Información institucional -->
-    <section class="bg-gradient-to-r from-blue-100 to-purple-100 py-16 text-center">
-        <h3 class="text-3xl font-semibold text-blue-700 mb-6">¿Por qué elegirnos?</h3>
-        <p class="text-gray-700 max-w-3xl mx-auto mb-8">Somos una empresa dedicada a ofrecer productos institucionales con altos estándares de calidad y compromiso social. Contamos con experiencia en atender instituciones educativas, empresas y entidades públicas.</p>
-        <div class="flex flex-wrap justify-center gap-8 mt-8">
-            <div class="bg-white shadow-md rounded-xl p-6 w-60 hover:shadow-xl transition">
-                <h4 class="font-bold text-blue-700 text-lg mb-2">✔ Calidad garantizada</h4>
-                <p class="text-gray-500 text-sm">Trabajamos con materiales certificados y proveedores confiables.</p>
-            </div>
-            <div class="bg-white shadow-md rounded-xl p-6 w-60 hover:shadow-xl transition">
-                <h4 class="font-bold text-blue-700 text-lg mb-2">🚚 Entregas seguras</h4>
-                <p class="text-gray-500 text-sm">Cumplimos con los tiempos de entrega y aseguramos tus pedidos.</p>
-            </div>
-            <div class="bg-white shadow-md rounded-xl p-6 w-60 hover:shadow-xl transition">
-                <h4 class="font-bold text-blue-700 text-lg mb-2">💬 Atención personalizada</h4>
-                <p class="text-gray-500 text-sm">Te acompañamos en cada paso del proceso de compra.</p>
-            </div>
+        @foreach ([
+        [
+            'img' => 'https://via.placeholder.com/250x180',
+            'categoria' => 'Servilletas para restaurantes y negocios',
+            'ref' => '72677+80137',
+            'titulo' => 'Servilleta Plus Natural',
+            'descripcion' => 'Mayor rendimiento gracias a su sistema de dispensado que evita el consumo excesivo.',
+        ],
+        [
+            'img' => 'https://via.placeholder.com/250x180',
+            'categoria' => 'Gel Antibacterial para manos',
+            'ref' => '80096+83201',
+            'titulo' => 'Gel Antibacterial repuesto 1.000 mL',
+            'descripcion' => 'Elimina el 99.9% de bacterias y contiene humectantes que cuidan la piel.',
+        ],
+        [
+            'img' => 'https://via.placeholder.com/250x180',
+            'categoria' => 'Toallas de papel',
+            'ref' => '73575+83150',
+            'titulo' => 'Toalla de Manos Flujo Central Famimax 100m',
+            'descripcion' => 'Máximo rendimiento con hojas de alta absorción, resistencia y suavidad.',
+        ]
+        ] as $producto)
+        <div class="bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-xl transition overflow-hidden p-6 flex flex-col justify-between">
+        
+        <!-- Imagen -->
+        <div class="flex justify-center mb-4">
+            <img src="{{ $producto['img'] }}" alt="{{ $producto['titulo'] }}" class="h-36 object-contain">
         </div>
+
+        <!-- Información -->
+        <div class="text-left mb-6">
+            <p class="text-sm text-blue-600 font-medium mb-1">{{ $producto['categoria'] }}</p>
+            <p class="text-sm text-gray-500 mb-1">Ref: {{ $producto['ref'] }}</p>
+            <h4 class="font-bold text-blue-800 mb-2 text-lg">{{ $producto['titulo'] }}</h4>
+            <p class="text-gray-600 text-sm">{{ $producto['descripcion'] }}</p>
+        </div>
+
+        <!-- Botón -->
+        <div class="text-center">
+            <a href="{{ route('productos') }}" 
+            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-semibold transition">
+            Ver producto
+            </a>
+        </div>
+        </div>
+        @endforeach
+
+    </div>
     </section>
+    
+    <!-- === SECCIÓN DE TESTIMONIOS (INSERCIÓN) === -->
+    @include('partials.testimonios_section')
+    <!-- ========================================== -->
+
+
+    <!-- Botón flotante del carrito con contador (Mejorado) -->
+    <a href="{{ route('carrito') }}" 
+    class="fixed bottom-6 right-6 bg-purple-600 hover:bg-purple-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-2xl transition transform hover:scale-110 z-50 relative">
+        <i class="fas fa-shopping-cart text-2xl"></i>
+        <!-- Contador de artículos (simulado con el número 3 por ahora) -->
+        <span class="cart-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">
+            3
+        </span>
+    </a>
+
 
     <!-- Footer -->
     <footer class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 mt-16">
@@ -158,6 +156,72 @@
         .animate-fadeIn {
             animation: fadeIn 1s ease-in-out;
         }
+
+
+        <!-- La sección se inyectará en welcome.blade.php -->
+<section class="max-w-6xl mx-auto py-16 px-6 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-lg mt-16">
+    <h3 class="text-3xl font-bold text-center text-purple-700 dark:text-purple-400 mb-12">Lo que Nuestros Clientes Dicen</h3>
+    
+    <!-- Simulacro de datos de Testimonios (reemplazar con datos reales de la BD) -->
+    @php
+        $testimonios = [
+            [
+                'texto' => 'La gestión logística para la entrega de uniformes fue impecable. Recibimos más de 500 kits a tiempo y con la calidad prometida.',
+                'cliente' => 'María G.',
+                'empresa' => 'Colegio San Ignacio',
+                'puntuacion' => 5
+            ],
+            [
+                'texto' => 'Su capacidad de respuesta en el suministro de materiales de higiene fue crucial durante el pico de demanda. Un socio estratégico confiable.',
+                'cliente' => 'Roberto V.',
+                'empresa' => 'Hospital Metropolitano',
+                'puntuacion' => 5
+            ],
+            [
+                'texto' => 'Excelente calidad en los bordados de nuestros logos. El servicio al cliente siempre atento a los detalles de la personalización.',
+                'cliente' => 'Ana S.',
+                'empresa' => 'Empresa de Tecnología "Innovatech"',
+                'puntuacion' => 4.5
+            ]
+        ];
+    @endphp
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        @foreach($testimonios as $testimonio)
+            <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-xl border-t-4 border-purple-500 flex flex-col justify-between">
+                <div>
+                    <!-- Icono de Citas -->
+                    <i class="fas fa-quote-left text-2xl text-purple-400 mb-3"></i>
+                    
+                    <p class="italic text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">"{{ $testimonio['texto'] }}"</p>
+                </div>
+                
+                <div class="mt-4 border-t pt-4 border-gray-100 dark:border-gray-700">
+                    <p class="font-bold text-gray-800 dark:text-gray-200">{{ $testimonio['cliente'] }}</p>
+                    <p class="text-sm text-purple-600 dark:text-purple-400">{{ $testimonio['empresa'] }}</p>
+                    
+                    <!-- Puntuación (Estrellas) -->
+                    <div class="flex mt-2">
+                        @for ($i = 0; $i < 5; $i++)
+                            @if ($testimonio['puntuacion'] > $i)
+                                <i class="fas fa-star text-yellow-400"></i>
+                            @else
+                                <i class="far fa-star text-gray-300 dark:text-gray-600"></i>
+                            @endif
+                        @endfor
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+    
+    <!-- CTA para más confianza -->
+    <div class="text-center mt-12">
+        <a href="{{ route('contacto') }}" class="text-purple-600 font-semibold hover:text-purple-800 transition">
+            <i class="fas fa-check-circle mr-2"></i> Únete a nuestra lista de clientes satisfechos
+        </a>
+    </div>
+</section>
     </style>
 </body>
 </html>
