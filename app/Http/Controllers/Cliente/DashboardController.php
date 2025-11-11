@@ -11,8 +11,8 @@ class DashboardController extends Controller
     public function index()
     {
         // Obtener todos los productos
-        $productos = Producto::all();
-        
+    
+        $productos = Producto::where('stock', '>', 0)->get();
         return view('cliente.dashboard', compact('productos'));
     }
 

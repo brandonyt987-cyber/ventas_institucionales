@@ -1,53 +1,90 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@yield('title', 'Ventas Institucionales')</title>
+    @vite('resources/css/app.css')
+</head>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+<body class="flex flex-col min-h-screen bg-gray-50">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-        
-        <!-- === INCLUSIÓN DE FONT AWESOME PARA ICONOS (LUPA Y CARRITO) === -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/CDQ+09fC3J4Qn2z5c1cM3P92/d1E4A9i4j2n0wA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <!-- ============================================================= -->
+    <!-- NAVBAR PRINCIPAL -->
+    <header class="bg-blue-700 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+            <!-- Logo y título -->
+            <div class="flex items-center gap-3">
+                <a href="{{ route('inicio') }}" class="flex items-center gap-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 w-auto object-contain">
+                    <h1 class="text-xl font-bold tracking-tight">Ventas Institucionales</h1>
+                </a>
+            </div>
 
+            <!-- Buscador centrado -->
+            <div class="flex-1 flex justify-center">
+                <form action="{{ route('buscar') }}" method="GET" class="w-full max-w-lg relative">
+                    <input 
+                        type="text"
+                        name="q"
+                        value="{{ request('q') }}"
+                        placeholder="Buscar productos..."
+                        class="w-full rounded-full py-2 px-4 text-gray-800 focus:outline-none"
+                    />
+                    <button type="submit" class="absolute right-1 top-1/2 -translate-y-1/2 bg-blue-800 hover:bg-blue-900 text-white rounded-full p-2">
+                        🔍
+                    </button>
+                </form>
+            </div>
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            
-            <!-- La vista 'layouts.navigation' es solo para usuarios logueados. 
-                 La página principal 'welcome' usa su propio encabezado.
-            -->
-            @auth
-                @include('layouts.navigation')
-            @endauth
-            
+            <!-- Iconos: carrito y login -->
+            <div class="flex items-center gap-4">
+                @auth
+                    <a href="{{ route('carrito') }}" class="relative flex items-center gap-1">
+                        🛒
+                        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 rounded-full">
+                            {{ \App\Http\Controllers\CarritoController::contarItems() }}
+                        </span>
+                    </a>
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
-
-            <!-- Page Content -->
-            <main>
-                @yield('content')
-            </main>
-
+                    <a href="{{ route('dashboard') }}" class="bg-white text-blue-700 px-4 py-2 rounded-full font-semibold hover:bg-blue-100">
+                        Mi cuenta
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="relative flex items-center gap-1">
+                        🛒
+                        <span class="absolute -top-2 -right-2 bg-gray-400 text-white text-xs px-2 rounded-full">0</span>
+                    </a>
+                    <a href="{{ route('login') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full font-semibold">
+                        Iniciar Sesión
+                    </a>
+                @endauth
+            </div>
         </div>
-        
-        <!-- Aquí podríamos incluir el carrito flotante si queremos que aparezca en todas las páginas, 
-             pero por ahora lo dejaremos en welcome.blade.php para el diseño personalizado.
-        -->
-    </body>
+
+        <!-- Submenú: enlaces informativos -->
+        <div class="bg-blue-50 text-blue-900 border-t border-blue-200">
+            <div class="max-w-7xl mx-auto px-6 py-2 flex justify-center gap-6 text-sm font-medium">
+                <a href="{{ route('quienes-somos') }}" class="hover:text-blue-600 transition">Quiénes Somos</a>
+                <span class="text-gray-400">|</span>
+                <a href="{{ route('por-que-elegirnos') }}" class="hover:text-blue-600 transition">Por qué Elegirnos</a>
+                <span class="text-gray-400">|</span>
+                <a href="{{ route('contacto') }}" class="hover:text-blue-600 transition">Contáctanos</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="flex-grow">
+        @yield('content')
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 mt-16">
+        <div class="max-w-6xl mx-auto text-center">
+            <p>&copy; {{ date('Y') }} Ventas Institucionales. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    @vite('resources/js/app.js')
+</body>
 </html>

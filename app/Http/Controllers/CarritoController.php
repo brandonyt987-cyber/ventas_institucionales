@@ -6,112 +6,104 @@ use App\Models\Carrito;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class CarritoController extends Controller
 {
-    // Ver el carrito
+    // Mostrar carrito
     public function index()
     {
-        $items = Carrito::with('producto')
-            ->where('user_id', Auth::id())
-            ->get();
-            
-        $total = $items->sum(function($item) {
-            return $item->cantidad * $item->producto->precio;
-        });
-        
-        return view('cliente.carrito', compact('items', 'total'));
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Debes iniciar sesión para ver tu carrito.');
+        }
+
+        $carrito = Carrito::where('user_id', Auth::id())->with('producto')->get();
+        $total = $carrito->sum(fn($item) => $item->producto->precio * $item->cantidad);
+
+        return view('cliente.carrito', compact('carrito', 'total'));
     }
 
     // Agregar producto al carrito
     public function agregar(Request $request, $productoId)
     {
+        // Si no está logueado, guardamos el intento y redirigimos al login
+        if (!Auth::check()) {
+            Session::put('producto_pendiente', $productoId);
+            return redirect()->route('login')->with('info', 'Inicia sesión para agregar productos al carrito.');
+        }
+
         $producto = Producto::findOrFail($productoId);
-        
-        // Validar que haya stock
+
         if ($producto->stock < 1) {
-            return back()->with('error', 'Producto sin stock disponible');
+            return back()->with('error', 'Producto sin stock disponible.');
         }
 
         $cantidad = $request->input('cantidad', 1);
 
-        // Verificar si el producto ya está en el carrito
         $itemCarrito = Carrito::where('user_id', Auth::id())
             ->where('producto_id', $productoId)
             ->first();
 
         if ($itemCarrito) {
-            // Si ya existe, actualizar cantidad
             $nuevaCantidad = $itemCarrito->cantidad + $cantidad;
-            
-            // Validar que no exceda el stock
+
             if ($nuevaCantidad > $producto->stock) {
-                return back()->with('error', 'No hay suficiente stock disponible');
+                return back()->with('error', 'No hay suficiente stock disponible.');
             }
-            
+
             $itemCarrito->update(['cantidad' => $nuevaCantidad]);
-            return back()->with('success', 'Cantidad actualizada en el carrito');
+            return back()->with('success', 'Cantidad actualizada en el carrito.');
         } else {
-            // Si no existe, crear nuevo item
             Carrito::create([
                 'user_id' => Auth::id(),
                 'producto_id' => $productoId,
                 'cantidad' => $cantidad,
             ]);
-            
-            return back()->with('success', 'Producto agregado al carrito');
+
+            return back()->with('success', 'Producto agregado al carrito.');
         }
     }
 
-    // Actualizar cantidad
+    // Actualizar cantidad de producto
     public function actualizar(Request $request, $itemId)
     {
-        $item = Carrito::where('user_id', Auth::id())
-            ->where('id', $itemId)
-            ->firstOrFail();
-            
-        $cantidad = $request->input('cantidad', 1);
-        
-        // Validar stock
+        $item = Carrito::findOrFail($itemId);
+        $cantidad = $request->input('cantidad');
+
+        if ($cantidad < 1) {
+            return back()->with('error', 'La cantidad debe ser al menos 1.');
+        }
+
         if ($cantidad > $item->producto->stock) {
-            return back()->with('error', 'No hay suficiente stock disponible');
+            return back()->with('error', 'No hay suficiente stock disponible.');
         }
-        
-        if ($cantidad > 0) {
-            $item->update(['cantidad' => $cantidad]);
-            return back()->with('success', 'Cantidad actualizada');
-        }
-        
-        return back()->with('error', 'La cantidad debe ser mayor a 0');
+
+        $item->update(['cantidad' => $cantidad]);
+        return back()->with('success', 'Cantidad actualizada.');
     }
 
-    // Eliminar del carrito
+    // Eliminar un producto del carrito
     public function eliminar($itemId)
     {
-        $item = Carrito::where('user_id', Auth::id())
-            ->where('id', $itemId)
-            ->firstOrFail();
-            
+        $item = Carrito::findOrFail($itemId);
         $item->delete();
-        
-        return back()->with('success', 'Producto eliminado del carrito');
+        return back()->with('success', 'Producto eliminado del carrito.');
     }
 
     // Vaciar carrito
     public function vaciar()
     {
         Carrito::where('user_id', Auth::id())->delete();
-        
-        return back()->with('success', 'Carrito vaciado');
+        return back()->with('success', 'Carrito vaciado correctamente.');
     }
 
-    // Contar items en el carrito (para el badge del navbar)
+    // ✅ Método para contar productos en el carrito (para el icono del navbar)
     public static function contarItems()
     {
         if (!Auth::check()) {
             return 0;
         }
-        
+
         return Carrito::where('user_id', Auth::id())->sum('cantidad');
     }
 }
