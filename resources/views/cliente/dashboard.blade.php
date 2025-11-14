@@ -6,73 +6,68 @@
     <title>Dashboard Cliente - Productos</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 flex flex-col min-h-screen">
 
-        <!-- NAVBAR PRINCIPAL -->
-        <header class="bg-blue-700 text-white shadow-md">
-            <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-                <!-- Logo y título -->
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('inicio') }}" class="flex items-center gap-3">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 w-auto object-contain">
-                        <h1 class="text-xl font-bold tracking-tight">Ventas Institucionales</h1>
-                    </a>
-                </div>
-
-                <!-- Buscador centrado -->
-                <div class="flex-1 flex justify-center">
-                    <form action="{{ route('buscar') }}" method="GET" class="w-full max-w-lg relative">
-                        <input 
-                            type="text"
-                            name="q"
-                            value="{{ request('q') }}"
-                            placeholder="Buscar productos..."
-                            class="w-full rounded-full py-2 px-4 text-gray-800 focus:outline-none"
-                        />
-                        <button type="submit" class="absolute right-1 top-1/2 -translate-y-1/2 bg-blue-800 hover:bg-blue-900 text-white rounded-full p-2">
-                            🔍
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Iconos: carrito y botón cerrar sesión -->
-                <div class="flex items-center gap-4">
-                    <a href="{{ route('carrito') }}" class="relative flex items-center gap-1">
-                        🛒
-                        <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 rounded-full">
-                            {{ \App\Http\Controllers\CarritoController::contarItems() }}
-                        </span>
-                    </a>
-
-                    <!-- Botón cerrar sesión -->
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full font-semibold">
-                            Cerrar sesión
-                        </button>
-                    </form>
-                </div>
+    <!-- NAVBAR PRINCIPAL -->
+    <header class="bg-blue-700 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+            <!-- Logo y título -->
+            <div class="flex items-center gap-3">
+                <a href="{{ route('inicio') }}" class="flex items-center gap-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 w-auto object-contain">
+                    <h1 class="text-xl font-bold tracking-tight">Ventas Institucionales</h1>
+                </a>
             </div>
 
-            <!-- Submenú: enlaces informativos -->
-            <div class="bg-blue-50 text-blue-900 border-t border-blue-200">
-                <div class="max-w-7xl mx-auto px-6 py-2 flex justify-center gap-6 text-sm font-medium">
-                    <a href="{{ route('quienes-somos') }}" class="hover:text-blue-600 transition">Quiénes Somos</a>
-                    <span class="text-gray-400">|</span>
-                    <a href="{{ route('por-que-elegirnos') }}" class="hover:text-blue-600 transition">Por qué Elegirnos</a>
-                    <span class="text-gray-400">|</span>
-                    <a href="{{ route('contacto') }}" class="hover:text-blue-600 transition">Contáctanos</a>
-                </div>
+            <!-- Buscador centrado -->
+            <div class="flex-1 flex justify-center">
+                <form action="{{ route('buscar') }}" method="GET" class="w-full max-w-lg relative">
+                    <input 
+                        type="text"
+                        name="q"
+                        value="{{ request('q') }}"
+                        placeholder="Buscar productos..."
+                        class="w-full rounded-full py-2 px-4 text-gray-800 focus:outline-none"
+                    />
+                    <button type="submit" class="absolute right-1 top-1/2 -translate-y-1/2 bg-blue-800 hover:bg-blue-900 text-white rounded-full p-2">
+                        🔍
+                    </button>
+                </form>
             </div>
-        </header>
 
+            <!-- Iconos: carrito y botón cerrar sesión -->
+            <div class="flex items-center gap-4">
+                <a href="{{ route('carrito') }}" class="relative flex items-center gap-1">
+                    🛒
+                    <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 rounded-full">
+                        {{ \App\Http\Controllers\CarritoController::contarItems() }}
+                    </span>
+                </a>
 
-<!-- Espacio para que el contenido no quede cubierto por el navbar fijo -->
-<div class="h-20"></div>
+                <!-- Botón cerrar sesión -->
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full font-semibold">
+                        Cerrar sesión
+                    </button>
+                </form>
+            </div>
+        </div>
 
+        <!-- Submenú: enlaces informativos -->
+        <div class="bg-blue-50 text-blue-900 border-t border-blue-200">
+            <div class="max-w-7xl mx-auto px-6 py-2 flex justify-center gap-6 text-sm font-medium">
+                <a href="{{ route('quienes-somos') }}" class="hover:text-blue-600 transition">Quiénes Somos</a>
+                <span class="text-gray-400">|</span>
+                <a href="{{ route('por-que-elegirnos') }}" class="hover:text-blue-600 transition">Por qué Elegirnos</a>
+                <span class="text-gray-400">|</span>
+                <a href="{{ route('contacto') }}" class="hover:text-blue-600 transition">Contáctanos</a>
+            </div>
+        </div>
+    </header>
 
     <!-- CONTENIDO PRINCIPAL -->
-    <div class="container mx-auto px-4 py-8">
+    <main class="flex-grow container mx-auto px-4 py-8">
         <div class="mb-8">
             <h2 class="text-3xl font-bold text-gray-800 mb-2">Catálogo de Productos</h2>
             <p class="text-gray-600">Explora nuestra selección de productos institucionales</p>
@@ -91,7 +86,7 @@
                                     class="h-full w-full object-cover">
                             @else
                                 <svg class="w-20 h-20 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                                 </svg>
                             @endif
                         </div>
@@ -143,7 +138,21 @@
                 <p class="text-gray-500">Pronto agregaremos nuevos productos al catálogo</p>
             </div>
         @endif
-    </div>
+    </main>
+
+    <!-- BOTÓN CAMBIAR MODO (Solo si es CLIENTE) -->
+    @if(auth()->user()->role === 'cliente' && !auth()->user()->modo_vendedor)
+        <div class="fixed bottom-4 right-4 z-50">
+            <form action="{{ route('cliente.cambiarModo') }}" method="POST">
+                @csrf
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full flex items-center gap-2 shadow-lg font-semibold transition">
+                    <span class="text-xl">🛒</span>
+                    <span class="text-sm">Activar Modo Vendedor</span>
+                </button>
+            </form>
+        </div>
+    @endif
+
 
 </body>
 </html>

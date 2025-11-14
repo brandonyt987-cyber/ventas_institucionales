@@ -9,15 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre');  // Laravel usa 255 caracteres por defecto
+            $table->id(); // 🔹 Clave primaria necesaria para relaciones
+            $table->string('nombre');
             $table->string('apellido');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->date('fecha_nacimiento')->nullable();
-            $table->string('telefono', 10)->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'cliente', 'vendedor', 'inventario'])->default('cliente');
+            $table->date('fecha_nacimiento');
+            $table->string('telefono', 15);
+            $table->string('role')->default('cliente'); // 🔹 Cambiado de 'rol' a 'role'
             $table->rememberToken();
             $table->timestamps();
         });
@@ -40,8 +40,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

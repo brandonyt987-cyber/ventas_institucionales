@@ -15,30 +15,56 @@
             <p class="text-gray-500 text-sm">Compra con un clic</p>
         </div>
 
-        <!-- Formulario -->
+        @if(session('success'))
+            <div class="mb-4 p-3 text-green-800 bg-green-100 rounded-lg">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="mb-4 p-3 text-red-800 bg-red-100 rounded-lg">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
             <!-- Email -->
             <div class="mb-4">
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-                <input id="email" type="email" name="email" required autofocus
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <x-input-error :messages="$errors->get('email')" class="mt-2 text-sm text-red-600" />
+                <input id="email" type="email" name="email" required autofocus value="{{ old('email') }}"
+                    class="w-full px-4 py-2 border @error('email') border-red-500 @enderror rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('email') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 
             <!-- Contraseña -->
             <div class="mb-4">
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-                <input id="password" type="password" name="password" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm text-red-600" />
+                <div class="relative">
+                    <input id="password" type="password" name="password" required
+                        class="w-full px-4 py-2 border @error('password') border-red-500 @enderror rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="button" id="togglePasswordLogin" class="absolute inset-y-0 right-3 flex items-center text-gray-500" aria-label="mostrar contraseña">👁️</button>
+                </div>
+                @error('password') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 
-            <div class="flex justify-end mb-4">
-                <a href="{{ route('password.request') }}" class="text-sm text-purple-600 hover:text-purple-800">
-                    ¿Olvidaste tu contraseña?
-                </a>
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="remember" class="form-checkbox">
+                        <span class="ml-2 text-sm text-gray-600">Recordarme</span>
+                    </label>
+                </div>
+                <div>
+                    <a href="{{ route('password.request') }}" class="text-sm text-purple-600 hover:text-purple-800">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
             </div>
 
             <button type="submit"
@@ -47,18 +73,27 @@
             </button>
         </form>
 
-        <!-- Línea divisoria -->
         <div class="flex items-center my-6">
             <div class="flex-grow border-t border-gray-300"></div>
             <span class="mx-3 text-sm text-gray-500">O</span>
             <div class="flex-grow border-t border-gray-300"></div>
         </div>
 
-        <!-- Botón para registrarse -->
         <a href="{{ route('register') }}"
             class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg py-2 transition-all duration-200">
             Crear cuenta nueva
         </a>
     </div>
+
+    <script>
+        // Toggle password login
+        const toggleLogin = document.getElementById('togglePasswordLogin');
+        const pwdLogin = document.getElementById('password');
+        if (toggleLogin && pwdLogin) {
+            toggleLogin.addEventListener('click', () => {
+                pwdLogin.type = pwdLogin.type === 'password' ? 'text' : 'password';
+            });
+        }
+    </script>
 </body>
 </html>

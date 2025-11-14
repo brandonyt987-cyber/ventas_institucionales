@@ -13,6 +13,11 @@ class CarritoController extends Controller
     // Mostrar carrito
     public function index()
     {
+
+        if (Auth::user()->role === 'vendedor' && Auth::user()->modo_vendedor) {
+            abort(403, 'Los vendedores no pueden usar el carrito en modo vendedor.');
+        }
+
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Debes iniciar sesión para ver tu carrito.');
         }

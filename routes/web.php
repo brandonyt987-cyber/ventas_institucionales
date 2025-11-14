@@ -1,32 +1,31 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\Admin\ProductoController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\Cliente\DashboardController as ClienteDashboard;
-use App\Http\Controllers\Vendedor\VendedorProductoController;
+use App\Http\Controllers\Vendedor\DashboardController as VendedorDashboard;
+use App\Http\Controllers\Vendedor\ProductoController as VendedorProductoController;
+use App\Http\Controllers\Vendedor\ClienteController as VendedorClienteController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 
 // =====================================================
 // 🌐 RUTAS PÚBLICAS (sin autenticación)
 // =====================================================
-
-// Página principal con productos desde la base de datos
 Route::get('/', [HomeController::class, 'index'])->name('inicio');
-
 Route::get('/quienes-somos', fn() => view('quienes-somos'))->name('quienes-somos');
 Route::get('/por-que-elegirnos', fn() => view('por-que-elegirnos'))->name('por-que-elegirnos');
 Route::get('/contacto', fn() => view('contacto'))->name('contacto');
-Route::get('/producto/{id}', [App\Http\Controllers\ProductoController::class, 'mostrar'])->name('producto.mostrar');
-
-
-// Búsqueda pública de productos
+Route::get('/producto/{id}', [ProductoController::class, 'mostrar'])->name('producto.mostrar');
 Route::get('/buscar', [ProductoController::class, 'buscar'])->name('buscar');
 
 // =====================================================
-// 🛒 RUTAS DEL CARRITO (accesibles para todos)
+// 🛒 RUTAS DEL CARRITO
 // =====================================================
 Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito');
 Route::post('/carrito/agregar/{productoId}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
@@ -38,8 +37,8 @@ Route::post('/carrito/vaciar', [CarritoController::class, 'vaciar'])->name('carr
 // 🔐 REDIRECCIÓN DESPUÉS DEL LOGIN
 // =====================================================
 Route::get('/dashboard', function () {
-    if (auth()->check()) {
-        $user = auth()->user();
+    if (Auth::check()) {
+        $user = Auth::user();
 
         return match ($user->role) {
             'admin' => redirect()->route('admin.dashboard'),
@@ -59,19 +58,28 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth', 'role:cliente'])->prefix('cliente')->name('cliente.')->group(function () {
     Route::get('/dashboard', [ClienteDashboard::class, 'index'])->name('dashboard');
     Route::get('/producto/{id}', [ClienteDashboard::class, 'show'])->name('producto.show');
-    Route::get('/carrito', fn() => view('cliente.carrito'))->name('carrito');
+    Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito');
+    Route::post('/carrito/agregar/{productoId}', [CarritoController::class, 'agregar'])->name('carrito.agregar');
+    
+    // ⭐ CAMBIAR MODO - Solo para clientes
+    Route::post('/cambiar-modo', [ClienteDashboard::class, 'cambiarModo'])->name('cambiarModo');
 });
 
 // =====================================================
 // 🏪 RUTAS DEL VENDEDOR
+// ⭐ SIN RESTRICCIÓN DE ROL - Cualquier usuario autenticado puede acceder
 // =====================================================
-Route::middleware(['auth', 'role:vendedor'])->prefix('vendedor')->name('vendedor.')->group(function () {
-    Route::get('/dashboard', fn() => view('vendedor.dashboard'))->name('dashboard');
+Route::middleware(['auth'])->prefix('vendedor')->name('vendedor.')->group(function () {
+    Route::get('/dashboard', [VendedorDashboard::class, 'index'])->name('dashboard');
+    Route::post('/cambiar-modo', [VendedorDashboard::class, 'cambiarModo'])->name('cambiarModo');
 
-    // Gestión de productos del vendedor
+    // Productos
     Route::get('/productos', [VendedorProductoController::class, 'index'])->name('productos.index');
     Route::get('/productos/crear', [VendedorProductoController::class, 'create'])->name('productos.create');
     Route::post('/productos', [VendedorProductoController::class, 'store'])->name('productos.store');
+
+    // Clientes
+    Route::get('/clientes', [VendedorClienteController::class, 'index'])->name('clientes.index');
 });
 
 // =====================================================
@@ -79,7 +87,17 @@ Route::middleware(['auth', 'role:vendedor'])->prefix('vendedor')->name('vendedor
 // =====================================================
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', fn() => view('admin.dashboard'))->name('dashboard');
-    Route::get('/usuarios', fn() => view('admin.usuarios'))->name('usuarios');
+    
+    Route::get('/usuarios', [AdminUserController::class, 'index'])->name('usuarios.index');
+    Route::get('/usuarios/{user}/edit', [AdminUserController::class, 'edit'])->name('usuarios.edit');
+    Route::put('/usuarios/{user}', [AdminUserController::class, 'update'])->name('usuarios.update');
+    Route::delete('/usuarios/{user}', [AdminUserController::class, 'destroy'])->name('usuarios.destroy');
+    Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
+    Route::get('/productos/crear', [ProductoController::class, 'create'])->name('productos.create');
+    Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
+    Route::get('/productos/{id}/editar', [ProductoController::class, 'edit'])->name('productos.edit');
+    Route::put('/productos/{id}', [ProductoController::class, 'update'])->name('productos.update');
+    Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
 });
 
 // =====================================================
@@ -90,7 +108,7 @@ Route::middleware(['auth', 'role:inventario'])->prefix('inventario')->name('inve
 });
 
 // =====================================================
-// 👤 RUTAS DE PERFIL (para todos los usuarios autenticados)
+// 👤 PERFIL DE USUARIO
 // =====================================================
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -99,49 +117,32 @@ Route::middleware('auth')->group(function () {
 });
 
 // =====================================================
-// 🔐 RUTAS DE AUTENTICACIÓN (login, registro, etc.)
+// 📬 FORMULARIO DE CONTACTO
 // =====================================================
-require __DIR__ . '/auth.php';
-
-// =====================================================
-// 📦 RUTA DE LISTADO GENERAL DE PRODUCTOS
-// =====================================================
-Route::get('/productos', function () {
-    return view('productos');
-})->name('productos');
-
-use Illuminate\Http\Request;
-
 Route::post('/contacto/enviar', function (Request $request) {
-    // Validación simple
     $request->validate([
         'nombre' => 'required|string|max:100',
         'email' => 'required|email|max:150',
         'mensaje' => 'required|string|max:1000',
     ]);
 
-    // Aquí podrías enviar un correo o guardar el mensaje, si quisieras
     return back()->with('success', '¡Gracias por tu mensaje! Te responderemos pronto.');
 })->name('contacto.enviar');
 
+// =====================================================
+// 🔐 AUTH
+// =====================================================
+require __DIR__ . '/auth.php';
 
-//carrito no se 
-Route::middleware(['auth', 'role:cliente'])->prefix('cliente')->group(function () {
-    Route::post('/carrito/agregar/{productoId}', [CarritoController::class, 'agregar'])
-        ->name('cliente.carrito.agregar');
+use App\Http\Controllers\Auth\LoginController;
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [LoginController::class, 'login']);
+Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
-    Route::get('/carrito', [CarritoController::class, 'index'])
-        ->name('cliente.carrito');
-        });
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
-        //ruta vendedor ventas
-        Route::middleware(['auth', 'role:vendedor'])->group(function () {
-    Route::get('/vendedor/dashboard', [App\Http\Controllers\Vendedor\DashboardController::class, 'index'])->name('vendedor.dashboard');
-    Route::get('/vendedor/productos', [App\Http\Controllers\Vendedor\ProductoController::class, 'index'])->name('vendedor.productos.index');
-    Route::get('/vendedor/productos/crear', [App\Http\Controllers\Vendedor\ProductoController::class, 'create'])->name('vendedor.productos.create');
-    
-    // 🔹 Agregamos esta para evitar el error
-    Route::get('/vendedor/ventas', function () {
-        return view('vendedor.ventas'); // puedes crear esta vista luego
-    })->name('vendedor.venta');
-});
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');

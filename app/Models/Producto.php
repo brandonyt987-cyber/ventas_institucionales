@@ -10,10 +10,17 @@ class Producto extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'nombre',
         'descripcion',
         'precio',
         'stock',
-        'imagen',
+        'imagen', // Si tienes un campo para imagen
     ];
+
+    // Relación con el usuario vendedor
+    public function vendedor()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
