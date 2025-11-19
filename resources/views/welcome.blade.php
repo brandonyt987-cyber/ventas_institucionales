@@ -20,37 +20,53 @@
 
 <!-- Productos destacados -->
 <section id="productos" class="py-12">
-    <h2 class="text-2xl font-bold text-center mb-6 text-blue-700">Productos destacados</h2>
+    <h2 class="text-2xl font-bold text-center mb-6 text-blue-700">
+        Compra aquí lo que necesites
+    </h2>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+
         @foreach($productos as $producto)
-            <div class="bg-white shadow-md rounded-2xl p-6 flex flex-col items-center text-center">
-                        @php
-                // Si el producto tiene imagen en la base de datos, la usa. Si no, intenta deducirla según el nombre
-                $nombreBase = strtolower(str_replace(' ', '', explode(' ', $producto->nombre)[0]));
-                $imagen = $producto->imagen 
-                    ? asset('images/' . $producto->imagen)
-                    : asset('images/' . $nombreBase . '.jpg');
+
+            @php
+                // Determinar imagen
+                if ($producto->imagen) {
+                    $imagen = asset('storage/' . $producto->imagen);
+                } else {
+                    $nombreBase = strtolower(str_replace(' ', '', explode(' ', $producto->nombre)[0]));
+                    $imagen = asset('images/' . $nombreBase . '.jpg');
+                }
             @endphp
 
-            <img 
-                src="{{ $imagen }}" 
-                alt="{{ $producto->nombre }}" 
-                class="w-32 h-32 mx-auto mb-4 object-contain rounded-lg shadow-sm">
+            <div class="bg-white shadow-md rounded-2xl p-6 flex flex-col items-center text-center">
+
+                <img src="{{ $imagen }}"
+                     alt="{{ $producto->nombre }}"
+                     class="rounded shadow w-40 h-40 object-cover mb-4">
+
                 <p class="text-gray-500 text-sm mt-2">{{ $producto->descripcion }}</p>
-                <p class="text-blue-600 font-bold mt-3">${{ number_format($producto->precio, 0, ',', '.') }}</p>
-                
+                <p class="text-blue-600 font-bold mt-3">
+                    ${{ number_format($producto->precio, 0, ',', '.') }}
+                </p>
+
                 <div class="mt-4 flex gap-2">
-                <a href="{{ route('producto.mostrar', $producto->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"> Ver producto</a>
+                    <a href="{{ route('producto.mostrar', $producto->id) }}" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                        Ver producto
+                    </a>
+
                     <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST">
                         @csrf
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
+                        <button type="submit" 
+                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
                             Agregar al carrito
                         </button>
                     </form>
                 </div>
+
             </div>
         @endforeach
+
     </div>
 </section>
 

@@ -13,38 +13,40 @@ class CarritoController extends Controller
     // Mostrar carrito
     public function index()
     {
-
-        if (Auth::user()->role === 'vendedor' && Auth::user()->modo_vendedor) {
-            abort(403, 'Los vendedores no pueden usar el carrito en modo vendedor.');
-        }
-
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Debes iniciar sesión para ver tu carrito.');
         }
 
-        $carrito = Carrito::where('user_id', Auth::id())->with('producto')->get();
-        $total = $carrito->sum(fn($item) => $item->producto->precio * $item->cantidad);
+        $items = Carrito::where('user_id', Auth::id())->with('producto')->get();
+        $total = $items->sum(fn($item) => $item->producto->precio * $item->cantidad);
 
-        return view('cliente.carrito', compact('carrito', 'total'));
+        return view('carrito', compact('items', 'total'));
     }
 
     // Agregar producto al carrito
     public function agregar(Request $request, $productoId)
     {
-        // Si no está logueado, guardamos el intento y redirigimos al login
+        // Obtener el producto
+        $producto = Producto::findOrFail($productoId);
+
+        // Si no está logueado, redirigir al login
         if (!Auth::check()) {
-            Session::put('producto_pendiente', $productoId);
             return redirect()->route('login')->with('info', 'Inicia sesión para agregar productos al carrito.');
         }
 
-        $producto = Producto::findOrFail($productoId);
+        // ⭐ VALIDACIÓN: No puede comprar su propio producto
+        if (Auth::id() === $producto->user_id) {
+            return redirect()->back()->with('error', 'No puedes comprar tu propio producto.');
+        }
 
+        // Validar stock
         if ($producto->stock < 1) {
             return back()->with('error', 'Producto sin stock disponible.');
         }
 
         $cantidad = $request->input('cantidad', 1);
 
+        // Buscar si ya existe en el carrito
         $itemCarrito = Carrito::where('user_id', Auth::id())
             ->where('producto_id', $productoId)
             ->first();
@@ -69,7 +71,7 @@ class CarritoController extends Controller
         }
     }
 
-    // Actualizar cantidad de producto
+    // Actualizar cantidad de producto  
     public function actualizar(Request $request, $itemId)
     {
         $item = Carrito::findOrFail($itemId);

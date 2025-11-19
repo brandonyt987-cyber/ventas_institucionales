@@ -78,6 +78,17 @@ private function determineRoleFromEmail($email)
     // Por defecto, asignar cliente si no se puede determinar
     return 'cliente';
 }
+public function destroy(User $user)
+{
+    if (auth()->user()->role !== 'admin') {
+        abort(403);
+    }
+
+    $user->delete();
+
+    return redirect()->route('admin.usuarios.index')
+                    ->with('success', 'Usuario eliminado correctamente');
+}
 
 
 

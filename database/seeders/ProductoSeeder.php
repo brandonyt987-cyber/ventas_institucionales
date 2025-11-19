@@ -2,53 +2,50 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Models\User;
 use App\Models\Producto;
+use Illuminate\Database\Seeder;
 
 class ProductoSeeder extends Seeder
 {
     public function run(): void
     {
-        $productos = [
+        // Crear vendedor por defecto
+        $vendedor = User::firstOrCreate(
+            ['email' => 'tienda@oficial.com'],
             [
-                'nombre' => 'Uniforme Escolar Azul',
-                'descripcion' => 'Uniforme institucional color azul marino para colegios y academias.',
-                'precio' => 45.99,
-                'stock' => 120,
-                'imagen' => 'https://via.placeholder.com/300x300.png?text=Uniforme+Escolar'
-            ],
-            [
-                'nombre' => 'Kit de Materiales Básicos',
-                'descripcion' => 'Incluye cuadernos, lapiceros, lápices, borradores y regla.',
-                'precio' => 18.50,
-                'stock' => 200,
-                'imagen' => 'https://via.placeholder.com/300x300.png?text=Kit+Escolar'
-            ],
-            [
-                'nombre' => 'Chaqueta Institucional',
-                'descripcion' => 'Chaqueta personalizada con el logo de la institución.',
-                'precio' => 65.00,
-                'stock' => 60,
-                'imagen' => 'https://via.placeholder.com/300x300.png?text=Chaqueta+Institucional'
-            ],
-            [
-                'nombre' => 'Servilleta Institucional',
-                'descripcion' => 'Servilleta blanca de 30x30 cm para cafeterías y eventos institucionales.',
-                'precio' => 1.25,
-                'stock' => 500,
-                'imagen' => 'https://via.placeholder.com/300x300.png?text=Servilleta'
-            ],
-            [
-                'nombre' => 'Camisa Corporativa',
-                'descripcion' => 'Camisa de presentación con el logo bordado de la empresa.',
-                'precio' => 38.99,
-                'stock' => 150,
-                'imagen' => 'https://via.placeholder.com/300x300.png?text=Camisa+Corporativa'
-            ],
-        ];
+                'name' => 'Tienda Oficial',
+                'role' => 'vendedor',
+                'password' => bcrypt('Ab123456*'),
+            ]
+        );
 
-        foreach ($productos as $producto) {
-            Producto::create($producto);
-        }
+        // Productos de demo
+        Producto::create([
+            'user_id' => $vendedor->id,
+            'nombre' => 'Laptop Premium',
+            'descripcion' => 'Laptop de alta gama para profesionales',
+            'precio' => 1500000,
+            'stock' => 10,
+            'imagen' => null,
+        ]);
+
+        Producto::create([
+            'user_id' => $vendedor->id,
+            'nombre' => 'Mouse Inalámbrico',
+            'descripcion' => 'Mouse ergonómico y silencioso',
+            'precio' => 50000,
+            'stock' => 50,
+            'imagen' => null,
+        ]);
+
+        Producto::create([
+            'user_id' => $vendedor->id,
+            'nombre' => 'Teclado Mecánico',
+            'descripcion' => 'Teclado con switches mecánicos RGB',
+            'precio' => 150000,
+            'stock' => 30,
+            'imagen' => null,
+        ]);
     }
 }

@@ -155,67 +155,54 @@ class RegisteredUserController extends Controller
      * Determinar el rol basado en el email.
      */
     private function determineRoleFromEmail(string $email): string
-    {
-        // Convertir a minúsculas y limpiar espacios
-        $email = strtolower(trim($email));
+{
+    $email = strtolower(trim($email));
 
-        Log::info("🔍 Determinando rol para email: $email");
+    Log::info("🔍 Determinando rol para email: $email");
 
-        // OPCIÓN 1: Emails exactos (más seguro)
-        $rolesMap = [
-            'admin@admin.com' => 'admin',
-            'vendedor@vendedor.com' => 'vendedor',
-            'inventario@inventario.com' => 'inventario',
-        ];
+    // 🔹 Asignar admin si el correo termina en @admin.com
+    if (str_ends_with($email, '@admin.com')) {
+        Log::info("✅ Rol asignado: admin (por dominio @admin.com)");
+        return 'admin';
+    }
 
-        if (isset($rolesMap[$email])) {
-            Log::info("✅ Rol asignado por email exacto: " . $rolesMap[$email]);
-            return $rolesMap[$email];
-        }
+    // Detectar rol por palabras clave en la primera parte del correo
+    $localPart = explode('@', $email)[0];
 
-        // OPCIÓN 2: Detectar por palabras clave en la parte local (antes del @)
-        $localPart = explode('@', $email)[0];
+    if (str_contains($localPart, 'admin')) {
+        Log::info("✅ Rol asignado: admin (por palabra clave)");
+        return 'admin';
+    }
 
-        if (str_contains($localPart, 'admin')) {
-            Log::info("✅ Rol asignado: admin (por palabra clave)");
-            return 'admin';
-        }
+    if (str_contains($localPart, 'vendedor')) {
+        Log::info("✅ Rol asignado: vendedor (por palabra clave)");
+        return 'vendedor';
+    }
 
-        if (str_contains($localPart, 'vendedor')) {
-            Log::info("✅ Rol asignado: vendedor (por palabra clave)");
-            return 'vendedor';
-        }
+    if (str_contains($localPart, 'inventario')) {
+        Log::info("✅ Rol asignado: inventario (por palabra clave)");
+        return 'inventario';
+    }
 
-        if (str_contains($localPart, 'inventario')) {
-            Log::info("✅ Rol asignado: inventario (por palabra clave)");
-            return 'inventario';
-        }
+    // Dominios especiales
+    $domain = explode('@', $email)[1] ?? '';
 
-        // OPCIÓN 3: Detectar por dominio
-        $atPosition = strpos($email, '@');
-        if ($atPosition !== false) {
-            $domain = substr($email, $atPosition + 1);
-            Log::info("📧 Dominio extraído: $domain");
+    // Dominio vendedor
+    if (in_array($domain, ['vendedor.com'])) {
+        Log::info("✅ Rol asignado: vendedor (por dominio vendedor.com)");
+        return 'vendedor';
+    }
 
-            // Dominios especiales
-            $dominiosVendedor = ['vendedor.com'];
-            if (in_array($domain, $dominiosVendedor)) {
-                Log::info("✅ Rol asignado: vendedor (por dominio)");
-                return 'vendedor';
-            }
-
-            // Dominios de clientes comunes
-            $dominiosClientes = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'];
-            if (in_array($domain, $dominiosClientes)) {
-                Log::info("✅ Rol asignado: cliente (dominio común)");
-                return 'cliente';
-            }
-        }
-
-        // Por defecto, cliente
-        Log::info("✅ Rol asignado: cliente (por defecto)");
+    // Dominios comunes → cliente
+    if (in_array($domain, ['gmail.com','hotmail.com','outlook.com','yahoo.com'])) {
+        Log::info("✅ Rol asignado: cliente (dominio común)");
         return 'cliente';
     }
+
+    Log::info("⚠️ Rol cliente asignado por defecto");
+    return 'cliente';
+}
+
 
     /**
      * Redirigir según el rol del usuario.

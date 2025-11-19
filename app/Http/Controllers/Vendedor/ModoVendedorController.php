@@ -4,29 +4,30 @@ namespace App\Http\Controllers\Vendedor;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class ModoVendedorController extends Controller
 {
-    public function cambiarModo()
+    public function toggle()
     {
-          /** @var User $user */
         $user = Auth::user();
 
-        if ($user->rol === 'vendedor') {
-            $user->modo_vendedor = !$user->modo_vendedor;
-            $user->save();
+        // Si el usuario NO tiene el modo vendedor activado, lo activamos
+        $nuevoEstado = !$user->modo_vendedor;
 
-            // Redirige automáticamente al dashboard correspondiente
-            if ($user->modo_vendedor) {
-                return redirect()->route('vendedor.dashboard')
-                    ->with('status', 'Modo vendedor activado correctamente.');
-            } else {
-                return redirect()->route('cliente.dashboard')
-                    ->with('status', 'Modo cliente activado correctamente.');
-            }
+        // Guardar en BD
+        $user->modo_vendedor = $nuevoEstado;
+        $user->save();
+
+        // Guardar en sesión
+        session(['modo_vendedor' => $nuevoEstado]);
+
+        // Redirigir según el modo
+        if ($nuevoEstado) {
+            return redirect()->route('vendedor.dashboard')
+                ->with('success', 'Modo vendedor activado.');
+        } else {
+            return redirect()->route('cliente.dashboard')
+                ->with('success', 'Modo vendedor desactivado.');
         }
-
-        return redirect()->back()->with('error', 'Solo los vendedores pueden cambiar de modo.');
     }
 }

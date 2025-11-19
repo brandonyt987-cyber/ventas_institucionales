@@ -53,7 +53,7 @@
     <!-- BOTÓN CAMBIAR A CLIENTE -->
     @if(auth()->user()->role === 'cliente' && auth()->user()->modo_vendedor)
         <div class="fixed bottom-4 right-4 z-50">
-            <form action="{{ route('vendedor.cambiarModo') }}" method="POST">
+            <form action="{{ route('modo.vendedor.toggle') }}" method="POST">
                 @csrf
                 <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full flex items-center gap-2 shadow-lg font-semibold transition">
                     <span class="text-xl">💼</span>

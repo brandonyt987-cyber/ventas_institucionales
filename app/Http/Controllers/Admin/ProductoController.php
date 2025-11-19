@@ -63,5 +63,35 @@ class ProductoController extends Controller
         return redirect()->route('admin.productos.index')->with('success', 'Producto eliminado exitosamente.');
     }
 
+        public function inventario()
+    {
+        $totalProductos = Producto::count();
+        $stockTotal = Producto::sum('stock');
+        $stockBajo = Producto::where('stock', '>', 0)->where('stock', '<', 10)->count();
+        $sinStock = Producto::where('stock', 0)->count();
+
+        $productos = Producto::paginate(15);
+
+        return view('admin.inventario', compact('totalProductos', 'stockTotal', 'stockBajo', 'sinStock', 'productos'));
+    }
+
+    public function buscar(Request $request)
+{
+    $query = $request->input('q');
+    
+    $productos = Producto::where('nombre', 'like', "%$query%")
+                        ->orWhere('descripcion', 'like', "%$query%")
+                        ->where('stock', '>', 0)
+                        ->get();
+    
+    return view('productos.buscar', compact('productos', 'query'));
+}
+
+public function mostrar($id)
+{
+    $producto = Producto::findOrFail($id);
+    return view('productos.mostrar', compact('producto'));
+}
+
     
 }
