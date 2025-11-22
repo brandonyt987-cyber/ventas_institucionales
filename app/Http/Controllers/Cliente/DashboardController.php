@@ -22,11 +22,21 @@ class DashboardController extends Controller
         return view('cliente.dashboard', compact('productos'));
     }
 
-    public function show($id)
-    {
-        $producto = Producto::findOrFail($id);
-        return view('cliente.producto-detalle', compact('producto'));
-    }
+            public function show($id)
+        {
+            // Producto actual
+            $producto = Producto::findOrFail($id);
+
+            // Otros productos (excluyendo el actual)
+            $otros = Producto::where('id', '!=', $id)
+                            ->where('stock', '>', 0)
+                            ->take(4)
+                            ->get();
+
+            // Enviar ambos a la vista
+            return view('cliente.producto-detalle', compact('producto', 'otros'));
+        }
+
 
     public function cambiarModo(Request $request)
     {

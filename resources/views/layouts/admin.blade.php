@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard Admin')</title>
+    
+    {{-- Tailwind CSS --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    {{-- Font Awesome para iconos --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    {{-- Estilos adicionales --}}
+    @stack('styles')
 </head>
 <body class="bg-gray-50">
     <!-- Navbar -->
@@ -17,12 +25,14 @@
             
             <div class="flex items-center space-x-6">
                 <span>Hola, <strong>{{ auth()->user()->nombre }}</strong></span>
-                <span class="bg-purple-800 px-3 py-1 rounded-full text-sm">Administrador</span>
+                <span class="bg-purple-800 px-3 py-1 rounded-full text-sm">
+                    <i class="fas fa-user-shield mr-1"></i> Administrador
+                </span>
                 
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition">
-                        Cerrar Sesión
+                        <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
                     </button>
                 </form>
             </div>
@@ -37,29 +47,30 @@
                 <ul class="space-y-2">
                     <li>
                         <a href="{{ route('admin.dashboard') }}" 
-                        class="flex items-center space-x-3 px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'bg-purple-100 text-purple-700' : 'text-gray-700' }} rounded-lg">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                            </svg>
+                        class="flex items-center space-x-3 px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'bg-purple-100 text-purple-700 border-l-4 border-purple-700' : 'text-gray-700 hover:bg-gray-100' }} rounded-lg transition-colors">
+                            <i class="fas fa-home w-5"></i>
                             <span class="font-semibold">Dashboard</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('admin.usuarios.index') }}" 
-                        class="flex items-center space-x-3 px-4 py-3 {{ request()->routeIs('admin.usuarios.index') || request()->is('admin/usuarios*') ? 'bg-purple-100 text-purple-700' : 'text-gray-700' }} rounded-lg">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                            </svg>
+                        class="flex items-center space-x-3 px-4 py-3 {{ request()->routeIs('admin.usuarios.*') ? 'bg-purple-100 text-purple-700 border-l-4 border-purple-700' : 'text-gray-700 hover:bg-gray-100' }} rounded-lg transition-colors">
+                            <i class="fas fa-users w-5"></i>
                             <span>Usuarios</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('admin.productos.index') }}" 
-                        class="flex items-center space-x-3 px-4 py-3 {{ request()->routeIs('admin.productos.index') ? 'bg-purple-100 text-purple-700' : 'text-gray-700' }} rounded-lg">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                            </svg>
+                        class="flex items-center space-x-3 px-4 py-3 {{ request()->routeIs('admin.productos.*') ? 'bg-purple-100 text-purple-700 border-l-4 border-purple-700' : 'text-gray-700 hover:bg-gray-100' }} rounded-lg transition-colors">
+                            <i class="fas fa-box w-5"></i>
                             <span>Productos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.inventario') }}" 
+                        class="flex items-center space-x-3 px-4 py-3 {{ request()->routeIs('admin.inventario') ? 'bg-purple-100 text-purple-700 border-l-4 border-purple-700' : 'text-gray-700 hover:bg-gray-100' }} rounded-lg transition-colors">
+                            <i class="fas fa-warehouse w-5"></i>
+                            <span>Inventario</span>
                         </a>
                     </li>
                 </ul>
@@ -68,8 +79,213 @@
 
         <!-- Contenido Principal -->
         <main class="flex-1 p-8">
+            {{-- SECCIÓN DE NOTIFICACIONES GLOBALES --}}
+            <div class="mb-4">
+                {{-- Mensaje de éxito --}}
+                @if (session('success'))
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-3 rounded shadow-md alert-dismissible" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle mr-3 text-green-500"></i>
+                            <div class="flex-1">
+                                <p class="font-semibold">¡Éxito!</p>
+                                <p>{{ session('success') }}</p>
+                            </div>
+                            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-green-500 hover:text-green-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Mensaje de error --}}
+                @if (session('error'))
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-3 rounded shadow-md alert-dismissible" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-circle mr-3 text-red-500"></i>
+                            <div class="flex-1">
+                                <p class="font-semibold">¡Error!</p>
+                                <p>{{ session('error') }}</p>
+                            </div>
+                            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-red-500 hover:text-red-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Mensaje de advertencia --}}
+                @if (session('warning'))
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-3 rounded shadow-md alert-dismissible" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle mr-3 text-yellow-500"></i>
+                            <div class="flex-1">
+                                <p class="font-semibold">Advertencia</p>
+                                <p>{{ session('warning') }}</p>
+                            </div>
+                            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-yellow-500 hover:text-yellow-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Mensaje informativo --}}
+                @if (session('info'))
+                    <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-3 rounded shadow-md alert-dismissible" role="alert">
+                        <div class="flex items-center">
+                            <i class="fas fa-info-circle mr-3 text-blue-500"></i>
+                            <div class="flex-1">
+                                <p class="font-semibold">Información</p>
+                                <p>{{ session('info') }}</p>
+                            </div>
+                            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Errores de validación --}}
+                @if ($errors->any())
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-3 rounded shadow-md alert-dismissible" role="alert">
+                        <div class="flex">
+                            <i class="fas fa-exclamation-circle mr-3 text-red-500"></i>
+                            <div class="flex-1">
+                                <p class="font-semibold mb-2">Por favor, corrija los siguientes errores:</p>
+                                <ul class="list-disc list-inside text-sm">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-red-500 hover:text-red-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            {{-- Contenido de la página --}}
             @yield('content')
         </main>
     </div>
+
+    {{-- Scripts globales --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarEliminacionSweet(event, nombre) {
+        event.preventDefault();
+        const form = event.target.closest('form');
+
+        Swal.fire({
+            title: '¿Eliminar permanentemente?',
+            html: `<span class="text-lg">Vas a eliminar al usuario:</span><br><strong class="text-xl text-red-600">${nombre}</strong><br><br>Esta acción <strong>NO se puede deshacer</strong>.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: '<i class="fas fa-trash-alt mr-2"></i>Sí, eliminar permanentemente',
+            cancelButtonText: '<i class="fas fa-times mr-2"></i>Cancelar',
+            reverseButtons: true,
+            padding: '2rem',
+            backdrop: `rgba(0,0,0,0.9)`,
+            customClass: {
+                popup: 'border-l-4 border-red-600',
+                title: 'text-2xl font-bold',
+                confirmButton: 'px-6 py-3 text-lg',
+                cancelButton: 'px-6 py-3 text-lg'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Animación antes de enviar
+                Swal.fire({
+                    title: 'Eliminando...',
+                    icon: 'info',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willClose: () => {
+                        form.submit();
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+    {{-- Estilos para animaciones --}}
+    <style>
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .alert-dismissible {
+            position: relative;
+            animation: slideInRight 0.5s ease-out;
+        }
+    </style>
+
+    {{-- SweetAlert2 (Opcional pero recomendado) --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Función de confirmación elegante con SweetAlert2
+        function confirmarEliminacionSweet(event, nombreProducto) {
+            event.preventDefault();
+            const form = event.target.closest('form');
+            
+            Swal.fire({
+                title: '¿Eliminar producto?',
+                text: `¿Está seguro que desea eliminar "${nombreProducto}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false;
+        }
+
+        // Mostrar notificación con SweetAlert2 si existe un mensaje de sesión
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: "{{ session('success') }}",
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: 'top-end',
+                toast: true
+            });
+        @endif
+    </script>
+
+    {{-- Scripts adicionales de páginas específicas --}}
+    @stack('scripts')
 </body>
 </html>

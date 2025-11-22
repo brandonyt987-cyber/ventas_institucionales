@@ -10,9 +10,10 @@ class UserController extends Controller
     // Método para listar todos los usuarios
     public function index()
     {
-        $users = User::all();
-        $users = User::orderBy('created_at', 'desc')->paginate(15);
-        return view('admin.users.index', compact('users')); // Envía los usuarios a la vista
+        // ¡ESTO ES LO QUE FALTABA!
+        $usuarios = User::latest()->paginate(15);
+
+        return view('admin.users.index', compact('usuarios'));
     }
 
     public function create()

@@ -72,12 +72,13 @@ return [
     ],
     'mimes'                => 'El :attribute debe ser un archivo de tipo: :values.',
     'mimetypes'            => 'El :attribute debe ser un archivo de tipo: :values.',
-    'min'                  => [
-        'array'   => 'El :attribute debe tener al menos :min elementos.',
-        'file'    => 'El :attribute debe pesar al menos :min kilobytes.',
+    'min' => [
         'numeric' => 'El :attribute debe ser al menos :min.',
-        'string'  => 'El :attribute debe tener al menos :min caracteres.',
+        'file' => 'El :attribute debe ser al menos :min kilobytes.',
+        'string' => 'El :attribute debe tener al menos :min caracteres.',
+        'array' => 'El :attribute debe tener al menos :min elementos.',
     ],
+
     'not_in'               => 'El :attribute seleccionado no es válido.',
     'not_regex'            => 'El formato de :attribute no es válido.',
     'numeric'              => 'El :attribute debe ser un número.',

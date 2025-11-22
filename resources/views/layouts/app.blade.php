@@ -28,7 +28,7 @@
             <!-- Logo -->
             <div class="flex items-center gap-3">
                 <a href="{{ route('inicio') }}" class="flex items-center gap-3">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 w-auto object-contain">
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-12 w-auto object-contain">
                     <h1 class="text-xl font-bold tracking-tight">Ventas Institucionales</h1>
                 </a>
             </div>

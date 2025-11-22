@@ -6,12 +6,15 @@
 <div class="max-w-4xl mx-auto px-6 py-12">
     <div class="bg-white shadow-lg rounded-2xl overflow-hidden flex flex-col md:flex-row">
         <div class="md:w-1/2 flex justify-center items-center p-6">
-            @php
-                $nombreBase = strtolower(str_replace(' ', '', explode(' ', $producto->nombre)[0]));
-                $imagen = $producto->imagen 
-                    ? asset('images/' . $producto->imagen)
-                    : asset('images/' . $nombreBase . '.jpg');
-            @endphp
+        @php
+                if ($producto->imagen) {
+                    $imagen = asset('storage/' . $producto->imagen);
+                } else {
+                    $nombreBase = strtolower(str_replace(' ', '', explode(' ', $producto->nombre)[0]));
+                    $imagen = asset('img/' . $nombreBase . '.jpg');
+                }
+        @endphp
+
             <img src="{{ $imagen }}" alt="{{ $producto->nombre }}" class="w-64 h-64 object-contain">
         </div>
 

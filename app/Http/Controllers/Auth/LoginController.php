@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -34,21 +33,28 @@ class LoginController extends Controller
         $user = User::where('email', $credentials['email'])->first();
 
         if (! $user) {
-            // Usuario no encontrado
             return back()->withErrors(['email' => 'La cuenta con ese correo no existe.'])->withInput();
         }
 
         // Verificar la contraseña
         if (! Hash::check($credentials['password'], $user->password)) {
-            // Contraseña incorrecta
             return back()->withErrors(['password' => 'Credenciales inválidas.'])->withInput();
         }
 
         // Realizar login
         Auth::login($user, $request->filled('remember'));
 
-        // Redirigir a la página de inicio con mensaje de éxito
-        return redirect()->intended(route('dashboard'))->with('success', 'Has iniciado sesión correctamente.');
+        // Revisar si tiene modo vendedor
+        if ($user->modo_vendedor) {
+            return redirect()->route('vendedor.dashboard')->with('success', 'Bienvenido al panel de vendedor.');
+        }
+
+        // Redirigir según rol normal
+        return match ($user->role) {
+            'admin'   => redirect()->route('admin.dashboard')->with('success', 'Bienvenido administrador.'),
+            'cliente' => redirect()->route('cliente.dashboard')->with('success', 'Bienvenido.'),
+            default   => redirect()->route('login')->withErrors(['email' => 'Rol no reconocido.']),
+        };
     }
 
     /**

@@ -13,8 +13,8 @@
                     @php
                         $nombreBase = strtolower(str_replace(' ', '', explode(' ', $producto->nombre)[0]));
                         $imagen = $producto->imagen 
-                            ? asset('images/' . $producto->imagen)
-                            : asset('images/' . $nombreBase . '.jpg');
+                            ? asset('img/' . $producto->imagen)
+                            : asset('img/' . $nombreBase . '.jpg');
                     @endphp
                     <img src="{{ $imagen }}" alt="{{ $producto->nombre }}" class="w-full h-40 object-contain rounded mb-3">
                     

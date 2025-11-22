@@ -34,26 +34,32 @@
                     $imagen = asset('storage/' . $producto->imagen);
                 } else {
                     $nombreBase = strtolower(str_replace(' ', '', explode(' ', $producto->nombre)[0]));
-                    $imagen = asset('images/' . $nombreBase . '.jpg');
+                    $imagen = asset('img/' . $nombreBase . '.jpg');
                 }
             @endphp
 
-            <div class="bg-white shadow-md rounded-2xl p-6 flex flex-col items-center text-center">
+                        <div class="bg-white shadow-md rounded-2xl p-6 flex flex-col items-center text-center">
 
-                <img src="{{ $imagen }}"
-                     alt="{{ $producto->nombre }}"
-                     class="rounded shadow w-40 h-40 object-cover mb-4">
+                <img 
+                    src="{{ asset('img/' . $producto->imagen) }}" 
+                    alt="{{ $producto->nombre }}" 
+                    class="rounded shadow w-40 h-40 object-cover mb-4"
+            />
+
+                <h3 class="text-lg font-semibold">{{ $producto->nombre }}</h3>
 
                 <p class="text-gray-500 text-sm mt-2">{{ $producto->descripcion }}</p>
+
                 <p class="text-blue-600 font-bold mt-3">
                     ${{ number_format($producto->precio, 0, ',', '.') }}
                 </p>
 
                 <div class="mt-4 flex gap-2">
-                    <a href="{{ route('producto.mostrar', $producto->id) }}" 
-                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
-                        Ver producto
-                    </a>
+                    <a href="{{ route('cliente.producto.show', $producto->id) }}"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                            Ver producto
+                        </a>
+
 
                     <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST">
                         @csrf

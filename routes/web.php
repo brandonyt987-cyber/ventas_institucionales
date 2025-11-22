@@ -147,3 +147,22 @@ require __DIR__.'/auth.php';
 Route::post('/modo-vendedor-toggle', [ModoVendedorController::class, 'toggle'])
     ->name('modo.vendedor.toggle')
     ->middleware('auth');
+
+// ===============================
+// 👑 ADMIN - USUARIOS (COMPLETO)
+// ===============================
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::get('/dashboard', fn() => view('admin.dashboard'))->name('dashboard');
+        Route::get('/inventario', [ProductoController::class, 'inventario'])->name('inventario');
+
+        // === USUARIOS ADMIN - AHORA SÍ COMPLETO ===
+        Route::resource('usuarios', AdminUserController::class)
+            ->parameters(['usuarios' => 'user']); // Esto hace que {usuarios} sea {user} en la URL
+
+        // === PRODUCTOS ADMIN ===
+        Route::resource('productos', ProductoController::class);
+    });
